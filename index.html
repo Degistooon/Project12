@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>أشكال هندسية دائرية مع خطوط منحنية</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        function drawCircle(x, y, radius, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawCurve(startX, startY, endX, endY, controlX, controlY, color) {
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // رسم الدوائر
+            for (let i = 0; i < 50; i++) {
+                const angle = (i / 50) * Math.PI * 2;
+                const radius = Math.min(canvas.width, canvas.height) * 0.2;
+                const x = centerX + Math.cos(angle) * radius * (1 + Math.sin(Date.now() * 0.001 + i * 0.1));
+                const y = centerY + Math.sin(angle) * radius * (1 + Math.sin(Date.now() * 0.001 + i * 0.1));
+                
+                const circleRadius = 20 + Math.sin(Date.now() * 0.002 + i) * 10;
+                
+                const hue = (i * 7.2 + Date.now() * 0.05) % 360;
+                const color = `hsla(${hue}, 100%, 50%, 0.7)`;
+                
+                drawCircle(x, y, circleRadius, color);
+            }
+
+            // رسم المنحنيات
+            for (let i = 0; i < 20; i++) {
+                const angle = (i / 20) * Math.PI * 2;
+                const radius = Math.min(canvas.width, canvas.height) * 0.4;
+                const endX = centerX + Math.cos(angle) * radius;
+                const endY = centerY + Math.sin(angle) * radius;
+                
+                const controlAngle = angle + Math.PI / 2;
+                const controlRadius = radius * 0.5 * (1 + Math.sin(Date.now() * 0.001 + i * 0.1));
+                const controlX = centerX + Math.cos(controlAngle) * controlRadius;
+                const controlY = centerY + Math.sin(controlAngle) * controlRadius;
+                
+                const hue = (i * 18 + Date.now() * 0.05) % 360;
+                const color = `hsla(${hue}, 100%, 50%, 0.5)`;
+                
+                drawCurve(centerX, centerY, endX, endY, controlX, controlY, color);
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+    </script>
+</body>
+</html>
